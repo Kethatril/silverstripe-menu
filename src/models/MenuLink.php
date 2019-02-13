@@ -4,7 +4,6 @@ namespace gorriecoe\Menu\Models;
 
 use gorriecoe\Link\Models\Link;
 use gorriecoe\Menu\Models\MenuSet;
-use gorriecoe\Menu\Models\MenuLink;
 use SilverStripe\GraphQL\Scaffolding\Interfaces\ScaffoldingProvider;
 use SilverStripe\GraphQL\Scaffolding\Scaffolders\SchemaScaffolder;
 use SilverStripe\Forms\GridField\GridField;
@@ -154,7 +153,10 @@ class MenuLink extends Link implements
      */
     public function canView($member = null)
     {
-        return $this->MenuSet()->canEdit($member);
+        if($this->MenuSet()->exists()) {
+            return $this->MenuSet()->canEdit($member);
+        }
+        return true;
     }
 
     /**
@@ -164,7 +166,10 @@ class MenuLink extends Link implements
      */
     public function canEdit($member = null)
     {
-        return $this->MenuSet()->canEdit($member);
+        if($this->MenuSet()->exists()) {
+            return $this->MenuSet()->canEdit($member);
+        }
+        return true;
     }
 
     /**
@@ -187,9 +192,12 @@ class MenuLink extends Link implements
     public function canCreate($member = null, $context = [])
     {
         if (isset($context['Parent'])) {
-             return $context['Parent']->canEdit();
+            return $context['Parent']->canEdit();
         }
-        return $this->MenuSet()->canEdit();
+        if($this->MenuSet()->exists()) {
+            return $this->MenuSet()->canEdit($member);
+        }
+        return true;
     }
 
     public function provideGraphQLScaffolding(SchemaScaffolder $scaffolder)
